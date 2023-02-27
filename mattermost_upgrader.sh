@@ -11,8 +11,26 @@ UPGRADE_ESR_ONLY="false"
 DEBUG=false
 
 # We expect the running mattermost directory in the following place.
-#MATTERMOST_ROOT=/var/mattermost-test
-MATTERMOST_ROOT=/var
+ALTERNATIVE_ROOT=/home/mattermost
+if [  -d /var/mattermost ]; then
+	MATTERMOST_ROOT=/var
+else
+	if [  -d /opt/mattermost ]; then
+ 		MATTERMOST_ROOT=/opt
+	else
+		echo "No default location found for mattermost. Trying the alternative location." 
+		
+		if [  -d  ${ALTERNATIVE_ROOT} ]; then
+ 			MATTERMOST_ROOT=${ALTERNATIVE_ROOT}
+		else
+			echo "No mattermost folder found in ${ALTERNATIVE_ROOT} or /opt or /var" 
+			exit
+		fi
+	fi
+fi
+
+# Check for a running process
+
 cd /var/tmp
 
 function usage() {
@@ -24,6 +42,23 @@ exit 0;
 }
 
 echo "Mattermost server updater ${MMU_VERSION} "
+echo
+echo "Mattermost work folder: ${MATTERMOST_ROOT}/mattermost"
+echo "Ensure that there is enough space for a copy of the mattermost folder in ${MATTERMOST_ROOT}."
+echo "Also be sure to have a database backup." 
+
+read -p "Are you sure you have a recent database backup ? (yes/no) " BACKUP_ANSWER
+if [ "${BACKUP_ANSWER}" = "yes" ]; then
+	echo "Alright, lets proceed"
+else
+	echo "Please first make a backup of your database. "
+	echo "For mysql you could issue: " 
+	echo "   mysqldump -u root -p -e --all-databases | gzip > mysqlbackup-<YYYY-MM-DD>.sql.gz" 
+#        echo "For PostgreSQL you could issue: "
+# I don't know how to make backups with PostgreSQL. Never used it.
+	exit
+fi
+
 
 # parse arguments
 while getopts ":he:f:s" arg; do
