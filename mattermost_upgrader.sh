@@ -31,8 +31,6 @@ fi
 
 # Check for a running process
 
-
-
 cd /var/tmp
 
 function usage() {
@@ -45,9 +43,22 @@ exit 0;
 
 echo "Mattermost server updater ${MMU_VERSION} "
 echo
-echo "Mattermost work folder: ${MATTERMOST_ROOT}"
+echo "Mattermost work folder: ${MATTERMOST_ROOT}/mattermost"
 echo "Ensure that there is enough space for a copy of the mattermost folder in ${MATTERMOST_ROOT}."
 echo "Also be sure to have a database backup." 
+
+read -p "Are you sure you have a recent database backup ? (yes/no) " BACKUP_ANSWER
+if [ "${BACKUP_ANSWER}" = "yes" ]; then
+	echo "Alright, lets proceed"
+else
+	echo "Please first make a backup of your database. "
+	echo "For mysql you could issue: " 
+	echo "   mysqldump -u root -p -e --all-databases | gzip > mysqlbackup-<YYYY-MM-DD>.sql.gz" 
+#        echo "For PostgreSQL you could issue: "
+# I don't know how to make backups with PostgreSQL. Never used it.
+	exit
+fi
+
 
 # parse arguments
 while getopts ":he:f:s" arg; do
