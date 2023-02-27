@@ -11,8 +11,26 @@ UPGRADE_ESR_ONLY="false"
 DEBUG=false
 
 # We expect the running mattermost directory in the following place.
-#MATTERMOST_ROOT=/var/mattermost-test
-MATTERMOST_ROOT=/var
+ALTERNATIVE_ROOT=/home/mattermost
+if [  -d /var/mattermost ]; then
+	MATTERMOST_ROOT=/var
+else
+	if [  -d /opt/mattermost ]; then
+ 		MATTERMOST_ROOT=/var
+	else
+		echo "No default location found for mattermost. Trying the alternative location." 
+		
+		if [  -d /opt/mattermost ]; then
+ 			MATTERMOST_ROOT=/var
+		else
+			echo "No mattermost folder found in ${ALTERNATIVE_ROOT} or /opt or /var" 
+			exit
+		fi
+	fi
+fi
+
+# Check for a running process
+
 cd /var/tmp
 
 function usage() {
