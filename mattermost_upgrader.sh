@@ -10,6 +10,13 @@ UPGRADE_EDITION="enterprise"
 UPGRADE_ESR_ONLY="false"
 DEBUG=false
 
+if [ "$(which rsync)" == "" ]; then
+	echo "We cannot find the rsync tool. Please install it." 
+	echo "On Debian it is done with: "
+	echo "   apt install rsync" 
+	exit
+fi
+
 # We expect the running mattermost directory in the following place.
 ALTERNATIVE_ROOT=/home/mattermost
 if [  -d /var/mattermost ]; then
@@ -109,6 +116,7 @@ function upgrade_mattermost() {
 
         # stop the service
         echo "Stopping mattermost"
+	# Maybe check for systemctl first
         service mattermost stop
 
         # backup mattermost
@@ -125,11 +133,13 @@ function upgrade_mattermost() {
         # Change ownership of the new files before copying them.
         chown -hR mattermost:mattermost mattermost*upgrade/
 
-        cp -avn mattermost*upgrade/. mattermost/
+	# Copy the upgraded mattermost to the work version.
+        cp -an mattermost*upgrade/. mattermost/
         rm -r mattermost*upgrade/
 
         # Start the service
         echo "Starting mattermost"
+	# check/change to systemctl
         service mattermost start
 
         echo "Upgrade your config.json schema:"
@@ -201,4 +211,6 @@ if [ "${MATTERMOST_VERSION}" != "${UPGRADE_VERSION}" ]; then
         else
                 echo "Fine we do nothing now."
         fi
+else
+	echo "You already run the latest version. No use to upgrade here." 
 fi
