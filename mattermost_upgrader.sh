@@ -2,7 +2,10 @@
 #
 # Mattermost upgrade script on local installed instances
 #
-# Written by Roalt Zijlstra - 20220822
+# Syntax: mattermost_upgrader.sh [-f <upgrade-file>] [-s] [-e team| enterprise]
+#
+# Developed on Debian platforms. So it works best on Debian/Ubuntu
+# Copyright: Roalt Zijlstra - 2022-08-22
 MMU_VERSION=7.0
 
 UPGRADE_FILE=""
