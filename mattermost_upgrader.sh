@@ -169,7 +169,7 @@ function upgrade_mattermost() {
 
 if [ "${UPGRADE_FILE}" = "" ]; then
         # Try to get the latest version number from the Version Archive
-        wget -o /var/tmp/version-archive.log -O /var/tmp/version-archive.html  https://docs.mattermost.com/upgrade/version-archive.html
+        wget -o /var/tmp/version-archive.log -O /var/tmp/version-archive.html  https://docs.mattermost.com/about/version-archive.html
         grep releases.mattermost.com  /var/tmp/version-archive.html  | grep -i "${UPGRADE_EDITION}" | grep ESR |  head -1 | sed 's/href="/\n/g' | sed 's/">Download/\n/g' > /var/tmp/frops-esr
         grep releases.mattermost.com  /var/tmp/version-archive.html  | grep -i "${UPGRADE_EDITION}" | head -1 | sed 's/href="/\n/g' | sed 's/">Download/\n/g' > /var/tmp/frops
         URL_ESR=$(grep "releases.mattermost.com" /var/tmp/frops-esr)
